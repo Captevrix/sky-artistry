@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Hero } from "../components/hero/Hero";
+import rq4Asset from "../assets/rq4.png.asset.json";
+import ac130jAsset from "../assets/ac130j.png.asset.json";
+import mq9Asset from "../assets/mq9.png.asset.json";
 
 const AIRCRAFT_IMAGES = {
-  rq4: "https://b687404.smushcdn.com/687404/wp-content/uploads/2023/03/RQ-4.png?lossy=1&strip=1&webp=1",
-  ac130: "https://b687404.smushcdn.com/687404/wp-content/uploads/2023/03/AC-130J-Transparent.png?lossy=1&strip=1&webp=1",
-  mq9: "https://b687404.smushcdn.com/687404/wp-content/uploads/2023/03/MQ-9-Left.png?lossy=1&strip=1&webp=1",
+  rq4: rq4Asset.url,
+  ac130: ac130jAsset.url,
+  mq9: mq9Asset.url,
 } as const;
 
 const TRUST_LOGOS = [
