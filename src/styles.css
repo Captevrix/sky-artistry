@@ -33,8 +33,13 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-gold-soft: var(--brand-gold-soft);
+  --color-brand-gold-deep: var(--brand-gold-deep);
+  --color-brand-ink: var(--brand-ink);
 }
 
 :root {
@@ -60,10 +65,16 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.78 0.15 210);
-  /* Signal accent — electric cyan */
-  --signal: oklch(0.82 0.17 210);
+  --ring: oklch(0.82 0.14 85);
+  /* Signal accent — TRG gold */
+  --signal: oklch(0.82 0.14 85);
   --signal-foreground: oklch(0.16 0.012 250);
+  /* TRG brand tokens (from logo) */
+  --brand-gold: oklch(0.82 0.14 85);
+  --brand-gold-soft: oklch(0.92 0.10 88);
+  --brand-gold-deep: oklch(0.66 0.13 75);
+  --brand-ink: oklch(0.14 0.01 250);
+  --gradient-gold: linear-gradient(135deg, var(--brand-gold-soft) 0%, var(--brand-gold) 45%, var(--brand-gold-deep) 100%);
 }
 
 .dark {
@@ -106,7 +117,22 @@
 }
 
 @utility signal-glow {
-  box-shadow: 0 0 0 1px oklch(0.82 0.17 210 / 40%), 0 0 40px oklch(0.82 0.17 210 / 25%);
+  box-shadow: 0 0 0 1px oklch(0.82 0.14 85 / 40%), 0 0 40px oklch(0.82 0.14 85 / 25%);
+}
+
+@utility font-serif {
+  font-family: var(--font-serif);
+}
+
+@utility bg-gradient-gold {
+  background-image: var(--gradient-gold);
+}
+
+@utility text-gradient-gold {
+  background-image: var(--gradient-gold);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 @keyframes marquee {

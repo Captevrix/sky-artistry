@@ -1,47 +1,48 @@
+## Goal
 
-# Fix hero: real aircraft images + correct flight direction
+Adopt the uploaded TRG logo as the source of truth for branding across the site, replacing the current electric-cyan accent with TRG's black + gold identity.
 
-Two focused changes to the existing 3D hero.
+## Brand extraction (from the logo)
 
-## 1. Use the legacy aircraft PNGs as the actual 3D aircraft
+- **Wordmark**: "TRG" in a classic black serif with a gold swoosh; "The Rockhill Group, Inc." set in a matching serif to the right. A small F-15 silhouette sits at the tail of the swoosh.
+- **Primary palette**:
+  - TRG Black — near-black used for the wordmark
+  - TRG Gold — warm metallic gold used in the swoosh (with a light-to-deep gradient)
+  - Paper / off-white background
+- **Type feel**: Serif for the brand mark and marquee headings; keep a clean sans for UI/body so the site still reads modern.
 
-Download the three transparent PNGs from the legacy site to `src/assets/` and upload them as CDN assets (`.asset.json` pointers) so they're served fast and stable:
+## Changes
 
-- `RQ-4.png` → RQ-4 Global Hawk
-- `AC-130J-Transparent.png` → AC-130J Ghostrider
-- `MQ-9-Left.png` → MQ-9 Reaper
+### 1. Logo asset
+- Upload the provided `trg-logo-768x283.webp` via `lovable-assets` into `src/assets/trg-logo.webp.asset.json`.
+- Add a small `TrgLogo` component that renders the logo image with proper alt text and sizing variants (nav height ~36px, footer ~48px, hero-ready larger size).
 
-Replace the procedural low-poly meshes in `src/components/hero/AircraftScene.tsx` with textured, billboarded plane meshes that display the real aircraft silhouettes:
+### 2. Design tokens (`src/styles.css`)
+Replace the electric-cyan "signal" with TRG gold and warm the neutral base so the logo sits naturally on dark backgrounds:
+- `--signal` → TRG gold `oklch(0.82 0.14 85)` (approx `#c9a84c`) with a `--signal-glow` lighter variant `oklch(0.90 0.11 88)`.
+- Add `--brand-gold`, `--brand-gold-soft`, `--brand-ink` (near-black) tokens plus a `--gradient-gold` (light→deep gold) matching the swoosh.
+- Keep the dark "mission-brief" base but shift hue slightly warmer so gold accents don't clash.
+- Add a Playfair Display (or similar) `--font-serif` for the wordmark / hero display; keep Space Grotesk + Inter for UI/body.
 
-- One `THREE.PlaneGeometry` per aircraft, sized to the image's aspect ratio.
-- `MeshBasicMaterial` with the PNG as `map`, `transparent: true`, `alphaTest: 0.05`, `depthWrite: false` so transparent edges composite cleanly against the sky/clouds.
-- Textures loaded via `useLoader(TextureLoader, ...)` with `colorSpace = SRGBColorSpace` and `anisotropy` bumped for crisp edges.
-- Scale each plane so the AC-130 reads largest, RQ-4 mid, MQ-9 smallest (matching their real-world silhouette hierarchy on screen).
-- Also swap the trust-bar and platforms-section `<img>` sources on the home page to the new CDN pointers so nothing points at the legacy CDN at runtime.
+### 3. Navigation (`src/components/site/Nav.tsx`)
+- Replace the current text mark with the `TrgLogo` (uses white/paper background of nav bar; if nav is dark, use the same logo — it already reads on light; we'll add a subtle light plate behind it OR use a slightly translucent paper chip so the black wordmark stays legible on the dark nav).
+- Active/hover link underline uses gold instead of cyan.
 
-## 2. Fix the flight direction (planes currently fly tail-first)
+### 4. Footer (`src/components/site/Footer.tsx`)
+- Show the logo at the top of the footer with the tagline "Delivering excellence since 2004" and update accent lines/dividers to gold.
 
-Root cause: the current code moves aircraft from `x = -14 → +14` (left → right), but also applies `rotation.y = Math.PI` which flips the model to face -X. Net result: moving right while facing left = flying backwards.
+### 5. Hero + accents (`src/routes/index.tsx`, `PageHeader.tsx`, buttons)
+- Any element currently using `signal` / cyan (HUD lines, telemetry chips, primary CTAs, hover states, marquee separators, section eyebrow text) switches to gold via the same token — visual updates only, no layout changes.
+- Primary CTA becomes gold gradient with black text; secondary CTA becomes outlined gold.
+- Keep the animated aircraft scene as-is; only tint any overlay/vignette accents to gold.
 
-Fix in `FlightPath`:
+### 6. Favicon / meta
+- Generate a square logomark (just the "TRG + swoosh" portion) and wire it up as favicon + `og:image` fallback.
 
-- The two PNGs facing right by default (`RQ-4.png`, `AC-130J-Transparent.png`, based on the `-Left`/no-suffix naming on the source) fly **left → right** with no Y rotation.
-- `MQ-9-Left.png` faces left by default, so it flies **right → left** (path reversed, no flip needed) — or we mirror it via `scale.x = -1` and keep left→right. I'll reverse its path so all three read as a coordinated flight but in the correct nose-forward direction.
-- Small tilt/roll (`rotation.z`) preserved for life; pitch (`rotation.x`) subtle sinusoid stays.
-- Remove the erroneous `rotation.y = Math.PI`.
+## Out of scope
+- No copy/content changes, no new routes, no layout restructuring, no changes to the 3D scene geometry or aircraft assets.
 
-Camera stays put. Cloud/starfield layers unchanged.
-
-## Files touched
-
-- `src/assets/rq4.png.asset.json` (new)
-- `src/assets/ac130j.png.asset.json` (new)
-- `src/assets/mq9.png.asset.json` (new)
-- `src/components/hero/AircraftScene.tsx` (rewrite Aircraft + FlightPath to use textured planes; fix direction)
-- `src/routes/index.tsx` (point `AIRCRAFT_IMAGES` at the new CDN pointers)
-
-## Verification
-
-After the change, run Playwright to screenshot the hero at 1280×1800 and confirm:
-1. Each aircraft's nose points in its direction of travel.
-2. The three real aircraft silhouettes are visible against the night sky.
+## Technical notes
+- Store the logo through `lovable-assets` (not `src/assets` as a binary).
+- All color updates go through CSS tokens — no hardcoded hex/`text-white` in components.
+- Add the serif font via a `<link>` in `__root.tsx` head (Tailwind v4 rule — no remote `@import` in `styles.css`).
