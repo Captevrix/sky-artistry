@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfessionalServicesRouteImport } from './routes/professional-services'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as AircrewTrainingRouteImport } from './routes/aircrew-training'
+import { Route as AirTransportationRouteImport } from './routes/air-transportation'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ProfessionalServicesRoute = ProfessionalServicesRouteImport.update({
+  id: '/professional-services',
+  path: '/professional-services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AircrewTrainingRoute = AircrewTrainingRouteImport.update({
+  id: '/aircrew-training',
+  path: '/aircrew-training',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AirTransportationRoute = AirTransportationRouteImport.update({
+  id: '/air-transportation',
+  path: '/air-transportation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/air-transportation': typeof AirTransportationRoute
+  '/aircrew-training': typeof AircrewTrainingRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/professional-services': typeof ProfessionalServicesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/air-transportation': typeof AirTransportationRoute
+  '/aircrew-training': typeof AircrewTrainingRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/professional-services': typeof ProfessionalServicesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/air-transportation': typeof AirTransportationRoute
+  '/aircrew-training': typeof AircrewTrainingRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/professional-services': typeof ProfessionalServicesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/air-transportation'
+    | '/aircrew-training'
+    | '/careers'
+    | '/contact'
+    | '/professional-services'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/air-transportation'
+    | '/aircrew-training'
+    | '/careers'
+    | '/contact'
+    | '/professional-services'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/air-transportation'
+    | '/aircrew-training'
+    | '/careers'
+    | '/contact'
+    | '/professional-services'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AirTransportationRoute: typeof AirTransportationRoute
+  AircrewTrainingRoute: typeof AircrewTrainingRoute
+  CareersRoute: typeof CareersRoute
+  ContactRoute: typeof ContactRoute
+  ProfessionalServicesRoute: typeof ProfessionalServicesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/professional-services': {
+      id: '/professional-services'
+      path: '/professional-services'
+      fullPath: '/professional-services'
+      preLoaderRoute: typeof ProfessionalServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aircrew-training': {
+      id: '/aircrew-training'
+      path: '/aircrew-training'
+      fullPath: '/aircrew-training'
+      preLoaderRoute: typeof AircrewTrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/air-transportation': {
+      id: '/air-transportation'
+      path: '/air-transportation'
+      fullPath: '/air-transportation'
+      preLoaderRoute: typeof AirTransportationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +177,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AirTransportationRoute: AirTransportationRoute,
+  AircrewTrainingRoute: AircrewTrainingRoute,
+  CareersRoute: CareersRoute,
+  ContactRoute: ContactRoute,
+  ProfessionalServicesRoute: ProfessionalServicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
