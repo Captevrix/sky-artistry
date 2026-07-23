@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Hero } from "../components/hero/Hero";
-import rq4Asset from "../assets/rq4.png.asset.json";
-import ac130jAsset from "../assets/ac130j.png.asset.json";
-import mq9Asset from "../assets/mq9.png.asset.json";
-
-const AIRCRAFT_IMAGES = {
-  rq4: rq4Asset.url,
-  ac130: ac130jAsset.url,
-  mq9: mq9Asset.url,
-} as const;
 
 const TRUST_LOGOS = [
   { src: "https://b687404.smushcdn.com/687404/wp-content/uploads/2023/03/SDVOSB-logo-color-300x300-1.png?lossy=1&strip=1&webp=1", alt: "SDVOSB — Service-Disabled Veteran-Owned Small Business" },
@@ -37,7 +28,6 @@ function Home() {
       <Hero />
       <MissionMarquee />
       <Capabilities />
-      <Aircraft />
       <Metrics />
       <TrustBar />
       <ClosingCTA />
@@ -120,46 +110,6 @@ function Capabilities() {
   );
 }
 
-function Aircraft() {
-  const fleet = [
-    { img: AIRCRAFT_IMAGES.rq4, name: "RQ-4 Global Hawk", role: "High-altitude ISR" },
-    { img: AIRCRAFT_IMAGES.ac130, name: "AC-130J Ghostrider", role: "Close air support" },
-    { img: AIRCRAFT_IMAGES.mq9, name: "MQ-9 Reaper", role: "Remotely piloted aircraft" },
-  ];
-  return (
-    <section className="border-y border-border bg-surface/30 py-24 lg:py-32 relative overflow-hidden">
-      <div className="absolute inset-0 grid-lines opacity-20 pointer-events-none" />
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="eyebrow">Platforms Supported</div>
-        <h2 className="mt-4 font-display text-4xl sm:text-5xl font-semibold max-w-2xl">
-          Advanced platforms. <span className="text-signal">Trained aircrews.</span>
-        </h2>
-        <div className="mt-16 grid gap-10 md:grid-cols-3">
-          {fleet.map((a) => (
-            <div key={a.name} className="group">
-              <div className="relative aspect-video overflow-hidden rounded-sm border border-border bg-gradient-to-br from-[#0e1a2f] to-[#0b1424] p-6">
-                <div className="absolute inset-0 grid-lines opacity-30" />
-                <img
-                  src={a.img}
-                  alt={a.name}
-                  className="relative h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute top-3 left-3 font-mono text-[10px] tracking-widest text-signal animate-hud-blink">● LIVE</div>
-              </div>
-              <div className="mt-5 flex items-center justify-between">
-                <div>
-                  <div className="font-display text-lg font-semibold">{a.name}</div>
-                  <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground mt-1">{a.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function Metrics() {
   const m = [
