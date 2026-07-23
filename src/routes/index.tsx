@@ -15,8 +15,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "The Rockhill Group — Aircrew Training, Air Transportation & Technical Services" },
       { name: "description", content: "TRG delivers aircrew training, air transportation, and professional, scientific & technical services to DoD, NOAA and the FAA with exceptional past performance." },
-      { property: "og:title", content: "The Rockhill Group — Mission-Ready Defense Services" },
-      { property: "og:description", content: "Safe. Reliable. Efficient. Aircrew training, air transportation and technical services trusted by the U.S. Department of Defense." },
+      { property: "og:title", content: "The Rockhill Group — Aircrew Training, Air Transportation & Technical Services" },
+      { property: "og:description", content: "TRG delivers aircrew training, air transportation, and professional, scientific & technical services to DoD, NOAA and the FAA with exceptional past performance." },
     ],
   }),
   component: Home,
