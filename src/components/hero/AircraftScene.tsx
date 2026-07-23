@@ -15,6 +15,7 @@ type AircraftDef = {
   url: string;
   aspect: number; // width / height of source PNG
   facesRight: boolean; // whether the artwork's nose points in +X
+  facesCamera?: boolean; // artwork is a head-on view; fly along +Z toward camera
   size: number; // world-space width
   yOffset: number;
   zOffset: number;
@@ -37,16 +38,17 @@ const AIRCRAFT: AircraftDef[] = [
     tilt: 0.03,
   },
   {
-    // AC-130J Ghostrider — source PNG faces right
+    // AC-130J Ghostrider — source PNG is a head-on 3/4 view (nose toward camera)
     url: ac130jAsset.url,
     aspect: 1224 / 473,
     facesRight: true,
+    facesCamera: true,
     size: 5.6,
-    yOffset: -0.5,
-    zOffset: 0,
-    speed: 0.035,
-    phase: 0.55,
-    tilt: -0.02,
+    yOffset: -0.4,
+    zOffset: -10,
+    speed: 0.03,
+    phase: 0.2,
+    tilt: 0,
   },
   {
     // MQ-9 Reaper — source PNG is "MQ-9-Left" (nose points left)
@@ -76,18 +78,28 @@ function AircraftSprite({ def }: { def: AircraftDef }) {
   useFrame((state) => {
     if (!ref.current) return;
     const t = (state.clock.elapsedTime * def.speed + def.phase) % 1;
-    // Fly in the direction the aircraft is facing.
-    // facesRight → travels left → right (x: -14 → +14)
-    // facesLeft  → travels right → left (x: +14 → -14)
+
+    if (def.facesCamera) {
+      // Head-on artwork: fly toward the camera along +Z, drift slightly.
+      const z = THREE.MathUtils.lerp(-22, 4, t);
+      const x = Math.sin(t * Math.PI * 0.8) * 1.2;
+      const y = def.yOffset + Math.sin(t * Math.PI) * 0.3;
+      ref.current.position.set(x, y, z);
+      ref.current.rotation.z = def.tilt + Math.sin(state.clock.elapsedTime * 0.4) * 0.015;
+      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.01;
+      return;
+    }
+
+    // Side-profile artwork: travel along the X axis in the nose direction.
     const x = def.facesRight
       ? THREE.MathUtils.lerp(-14, 14, t)
       : THREE.MathUtils.lerp(14, -14, t);
     const y = def.yOffset + Math.sin(t * Math.PI) * 0.5;
     ref.current.position.set(x, y, def.zOffset);
-    // No Y flip — textured planes keep their artwork orientation.
     ref.current.rotation.z = def.tilt + Math.sin(state.clock.elapsedTime * 0.4) * 0.02;
     ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.015;
   });
+
 
   return (
     <mesh ref={ref}>
