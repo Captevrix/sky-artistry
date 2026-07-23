@@ -1,28 +1,28 @@
-import { lazy, Suspense } from "react";
 import { Link } from "@tanstack/react-router";
-import { ClientOnly } from "../ClientOnly";
-
-const AircraftScene = lazy(() => import("./AircraftScene"));
+import heroVideo from "../../assets/hero-aerial.mp4.asset.json";
 
 export function Hero() {
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-[#0b1424]">
-      {/* 3D scene canvas */}
+      {/* Background video */}
       <div className="absolute inset-0">
-        <ClientOnly
-          fallback={
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0b1424] via-[#0e1a2f] to-[#0b1424]" />
-          }
-        >
-          <Suspense fallback={<div className="absolute inset-0" />}>
-            <AircraftScene />
-          </Suspense>
-        </ClientOnly>
+        <video
+          className="h-full w-full object-cover"
+          src={heroVideo.url}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster=""
+        />
       </div>
 
-      {/* Gradient overlays for readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background pointer-events-none" />
-      <div className="absolute inset-0 grid-lines opacity-30 pointer-events-none" />
+      {/* Cinematic overlays for readability */}
+      <div className="absolute inset-0 bg-[#0b1424]/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background pointer-events-none" />
+      <div className="absolute inset-0 grid-lines opacity-20 pointer-events-none" />
 
       {/* HUD corner marks */}
       <div className="absolute inset-6 pointer-events-none">
@@ -30,13 +30,6 @@ export function Hero() {
         <HudCorner className="top-0 right-0 rotate-90" />
         <HudCorner className="bottom-0 left-0 -rotate-90" />
         <HudCorner className="bottom-0 right-0 rotate-180" />
-      </div>
-
-      {/* Callsign ticker */}
-      <div className="absolute top-24 right-6 hidden md:flex flex-col gap-2 font-mono text-[10px] tracking-widest text-signal/80">
-        <TickerRow label="RQ-4" name="GLOBAL HAWK" />
-        <TickerRow label="AC-130J" name="GHOSTRIDER" />
-        <TickerRow label="MQ-9" name="REAPER" />
       </div>
 
       {/* Content */}
@@ -86,15 +79,6 @@ export function Hero() {
 function HudCorner({ className = "" }: { className?: string }) {
   return (
     <div className={`absolute h-6 w-6 border-l border-t border-signal/60 ${className}`} />
-  );
-}
-
-function TickerRow({ label, name }: { label: string; name: string }) {
-  return (
-    <div className="flex items-center gap-2 justify-end">
-      <span className="text-foreground/60">{name}</span>
-      <span className="rounded-sm border border-signal/40 bg-signal/10 px-1.5 py-0.5 text-signal">{label}</span>
-    </div>
   );
 }
 
