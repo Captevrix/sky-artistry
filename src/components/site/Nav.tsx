@@ -26,9 +26,9 @@ export function Nav() {
         scrolled ? "backdrop-blur-lg bg-background/70 border-b border-border" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center group" aria-label="The Rockhill Group — Home">
-          <TrgLogo height={34} variant="dark" />
+          <TrgLogo height={56} variant="dark" />
         </Link>
         <nav className="hidden lg:flex items-center gap-7">
 
