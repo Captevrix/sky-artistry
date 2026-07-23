@@ -1,48 +1,32 @@
 ## Goal
+Replace the beige background plate behind the logo in the nav with a purpose-built dark-mode version of the TRG logo that reads cleanly on the dark header.
 
-Adopt the uploaded TRG logo as the source of truth for branding across the site, replacing the current electric-cyan accent with TRG's black + gold identity.
+## Approach
+1. Generate a dark-mode logo asset:
+   - "TRG" rendered in white (with subtle outline) instead of black-outlined black
+   - Keep the gold-to-yellow swoosh behind "TRG" intact (it already pops on dark)
+   - "The Rockhill Group, Inc." wordmark in white/off-white
+   - F-15 silhouette in a light grey/white tint so it stays visible
+   - Transparent background, same proportions as the current logo
+   - Upload via `lovable-assets` to `src/assets/trg-logo-dark.webp.asset.json`
 
-## Brand extraction (from the logo)
+2. Update `src/components/site/TrgLogo.tsx`:
+   - Import both the original (light-bg) and new dark-bg asset pointers
+   - `variant="dark"` (used on dark surfaces like the nav) → render the new dark-mode asset with NO background plate
+   - `variant="light"` (used on light surfaces / footer if applicable) → keep the original logo as-is
+   - Remove the beige/cream background wrapper entirely
 
-- **Wordmark**: "TRG" in a classic black serif with a gold swoosh; "The Rockhill Group, Inc." set in a matching serif to the right. A small F-15 silhouette sits at the tail of the swoosh.
-- **Primary palette**:
-  - TRG Black — near-black used for the wordmark
-  - TRG Gold — warm metallic gold used in the swoosh (with a light-to-deep gradient)
-  - Paper / off-white background
-- **Type feel**: Serif for the brand mark and marquee headings; keep a clean sans for UI/body so the site still reads modern.
-
-## Changes
-
-### 1. Logo asset
-- Upload the provided `trg-logo-768x283.webp` via `lovable-assets` into `src/assets/trg-logo.webp.asset.json`.
-- Add a small `TrgLogo` component that renders the logo image with proper alt text and sizing variants (nav height ~36px, footer ~48px, hero-ready larger size).
-
-### 2. Design tokens (`src/styles.css`)
-Replace the electric-cyan "signal" with TRG gold and warm the neutral base so the logo sits naturally on dark backgrounds:
-- `--signal` → TRG gold `oklch(0.82 0.14 85)` (approx `#c9a84c`) with a `--signal-glow` lighter variant `oklch(0.90 0.11 88)`.
-- Add `--brand-gold`, `--brand-gold-soft`, `--brand-ink` (near-black) tokens plus a `--gradient-gold` (light→deep gold) matching the swoosh.
-- Keep the dark "mission-brief" base but shift hue slightly warmer so gold accents don't clash.
-- Add a Playfair Display (or similar) `--font-serif` for the wordmark / hero display; keep Space Grotesk + Inter for UI/body.
-
-### 3. Navigation (`src/components/site/Nav.tsx`)
-- Replace the current text mark with the `TrgLogo` (uses white/paper background of nav bar; if nav is dark, use the same logo — it already reads on light; we'll add a subtle light plate behind it OR use a slightly translucent paper chip so the black wordmark stays legible on the dark nav).
-- Active/hover link underline uses gold instead of cyan.
-
-### 4. Footer (`src/components/site/Footer.tsx`)
-- Show the logo at the top of the footer with the tagline "Delivering excellence since 2004" and update accent lines/dividers to gold.
-
-### 5. Hero + accents (`src/routes/index.tsx`, `PageHeader.tsx`, buttons)
-- Any element currently using `signal` / cyan (HUD lines, telemetry chips, primary CTAs, hover states, marquee separators, section eyebrow text) switches to gold via the same token — visual updates only, no layout changes.
-- Primary CTA becomes gold gradient with black text; secondary CTA becomes outlined gold.
-- Keep the animated aircraft scene as-is; only tint any overlay/vignette accents to gold.
-
-### 6. Favicon / meta
-- Generate a square logomark (just the "TRG + swoosh" portion) and wire it up as favicon + `og:image` fallback.
+3. Verify usage sites:
+   - `src/components/site/Nav.tsx` — uses `variant="dark"`, now renders clean on the dark header
+   - `src/components/site/Footer.tsx` — confirm which variant fits the footer's background and keep it consistent
+   - Favicon stays as-is (already works standalone)
 
 ## Out of scope
-- No copy/content changes, no new routes, no layout restructuring, no changes to the 3D scene geometry or aircraft assets.
+- No changes to color tokens, typography, or other branding rules
+- No changes to the 3D hero or any page content
+- Original logo asset is kept (used wherever the background is light)
 
-## Technical notes
-- Store the logo through `lovable-assets` (not `src/assets` as a binary).
-- All color updates go through CSS tokens — no hardcoded hex/`text-white` in components.
-- Add the serif font via a `<link>` in `__root.tsx` head (Tailwind v4 rule — no remote `@import` in `styles.css`).
+## Files touched
+- `src/assets/trg-logo-dark.webp.asset.json` (new)
+- `src/components/site/TrgLogo.tsx` (variant logic + remove background plate)
+- `src/components/site/Nav.tsx` / `Footer.tsx` (only if variant prop needs adjusting)

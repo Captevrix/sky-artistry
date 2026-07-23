@@ -1,6 +1,7 @@
-import logoAsset from "../../assets/trg-logo.webp.asset.json";
+import logoLight from "../../assets/trg-logo.webp.asset.json";
+import logoDark from "../../assets/trg-logo-dark.png.asset.json";
 
-type Variant = "light" | "dark"; // dark = for dark backgrounds (wraps in light plate)
+type Variant = "light" | "dark"; // "dark" = for dark backgrounds; "light" = for light backgrounds
 
 export function TrgLogo({
   className = "",
@@ -13,21 +14,14 @@ export function TrgLogo({
   variant?: Variant;
   alt?: string;
 }) {
-  const img = (
+  const src = variant === "dark" ? logoDark.url : logoLight.url;
+  return (
     <img
-      src={logoAsset.url}
+      src={src}
       alt={alt}
       style={{ height, width: "auto" }}
-      className="block select-none"
+      className={`block select-none ${className}`}
       draggable={false}
     />
-  );
-  if (variant === "light") return <span className={className}>{img}</span>;
-  return (
-    <span
-      className={`inline-flex items-center rounded-sm bg-[oklch(0.97_0.01_85)] px-2.5 py-1.5 ${className}`}
-    >
-      {img}
-    </span>
   );
 }
