@@ -1,113 +1,105 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 
+import rq4Asset from "../../assets/rq4.png.asset.json";
+import ac130jAsset from "../../assets/ac130j.png.asset.json";
+import mq9Asset from "../../assets/mq9.png.asset.json";
+
 /**
- * Stylized low-poly aircraft silhouettes representing the three platforms
- * TRG supports: RQ-4 Global Hawk, AC-130J Ghostrider, MQ-9 Reaper.
- * These are procedural — no external GLB assets required.
+ * Textured plane meshes displaying the actual DoD aircraft silhouettes
+ * used across TRG's mission sets: RQ-4 Global Hawk, AC-130J Ghostrider, MQ-9 Reaper.
  */
 
-type Variant = "rq4" | "ac130" | "mq9";
-
-function Aircraft({ variant, color = "#e6f2ff" }: { variant: Variant; color?: string }) {
-  const geometry = useMemo(() => {
-    const group = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({
-      color,
-      metalness: 0.6,
-      roughness: 0.35,
-      emissive: new THREE.Color(color).multiplyScalar(0.05),
-    });
-
-    if (variant === "rq4") {
-      // Global Hawk — long slender fuselage, huge straight wings, V-tail
-      const fuselage = new THREE.Mesh(new THREE.CapsuleGeometry(0.18, 2.4, 6, 10), mat);
-      fuselage.rotation.z = Math.PI / 2;
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), mat);
-      bulb.position.x = 0.9;
-      const wing = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.04, 5.4), mat);
-      wing.position.y = 0.1;
-      const vtail1 = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.04, 0.7), mat);
-      vtail1.position.set(-1.05, 0.25, 0.25);
-      vtail1.rotation.x = 0.6;
-      const vtail2 = vtail1.clone();
-      vtail2.position.z = -0.25;
-      vtail2.rotation.x = -0.6;
-      group.add(fuselage, bulb, wing, vtail1, vtail2);
-    } else if (variant === "ac130") {
-      // AC-130J — fat fuselage, high wing, 4 engines, T-tail
-      const fuselage = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 2.8, 8, 12), mat);
-      fuselage.rotation.z = Math.PI / 2;
-      const wing = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 5.2), mat);
-      wing.position.y = 0.3;
-      for (let i = 0; i < 4; i++) {
-        const eng = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.5, 4, 8), mat);
-        eng.rotation.z = Math.PI / 2;
-        eng.position.set(0.15, 0.22, -1.9 + i * 1.3);
-        group.add(eng);
-      }
-      const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.05), mat);
-      tailFin.position.set(-1.35, 0.55, 0);
-      const hStab = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.04, 1.4), mat);
-      hStab.position.set(-1.5, 0.9, 0);
-      group.add(fuselage, wing, tailFin, hStab);
-    } else {
-      // MQ-9 Reaper — slender, V-tail down, single prop tail-mounted, straight wings
-      const fuselage = new THREE.Mesh(new THREE.CapsuleGeometry(0.14, 2.0, 6, 10), mat);
-      fuselage.rotation.z = Math.PI / 2;
-      const nose = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), mat);
-      nose.position.x = 0.85;
-      nose.scale.x = 1.4;
-      const wing = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.03, 4.4), mat);
-      wing.position.y = 0.05;
-      const vtail1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.03, 0.55), mat);
-      vtail1.position.set(-0.9, -0.05, 0.18);
-      vtail1.rotation.x = -0.7;
-      const vtail2 = vtail1.clone();
-      vtail2.position.z = -0.18;
-      vtail2.rotation.x = 0.7;
-      group.add(fuselage, nose, wing, vtail1, vtail2);
-    }
-    return group;
-  }, [variant, color]);
-
-  return <primitive object={geometry} />;
-}
-
-function FlightPath({
-  variant,
-  speed,
-  yOffset,
-  zOffset,
-  scale,
-  phase,
-  tilt,
-}: {
-  variant: Variant;
-  speed: number;
+type AircraftDef = {
+  url: string;
+  aspect: number; // width / height of source PNG
+  facesRight: boolean; // whether the artwork's nose points in +X
+  size: number; // world-space width
   yOffset: number;
   zOffset: number;
-  scale: number;
+  speed: number;
   phase: number;
   tilt: number;
-}) {
-  const ref = useRef<THREE.Group>(null);
+};
+
+const AIRCRAFT: AircraftDef[] = [
+  {
+    // RQ-4 Global Hawk — source PNG faces right
+    url: rq4Asset.url,
+    aspect: 415 / 210,
+    facesRight: true,
+    size: 3.4,
+    yOffset: 2.1,
+    zOffset: -2,
+    speed: 0.05,
+    phase: 0,
+    tilt: 0.03,
+  },
+  {
+    // AC-130J Ghostrider — source PNG faces right
+    url: ac130jAsset.url,
+    aspect: 1224 / 473,
+    facesRight: true,
+    size: 5.6,
+    yOffset: -0.5,
+    zOffset: 0,
+    speed: 0.035,
+    phase: 0.55,
+    tilt: -0.02,
+  },
+  {
+    // MQ-9 Reaper — source PNG is "MQ-9-Left" (nose points left)
+    url: mq9Asset.url,
+    aspect: 696 / 564,
+    facesRight: false,
+    size: 2.8,
+    yOffset: 1.0,
+    zOffset: -5,
+    speed: 0.06,
+    phase: 0.3,
+    tilt: 0.04,
+  },
+];
+
+function AircraftSprite({ def }: { def: AircraftDef }) {
+  const texture = useLoader(THREE.TextureLoader, def.url);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+
+  const ref = useRef<THREE.Mesh>(null);
+  const width = def.size;
+  const height = def.size / def.aspect;
+
   useFrame((state) => {
     if (!ref.current) return;
-    const t = (state.clock.elapsedTime * speed + phase) % 1;
-    // Sweep left-to-right across a wide arc
-    const x = THREE.MathUtils.lerp(-14, 14, t);
-    const y = yOffset + Math.sin(t * Math.PI) * 0.6;
-    ref.current.position.set(x, y, zOffset);
-    ref.current.rotation.y = Math.PI + 0.05;
-    ref.current.rotation.z = tilt + Math.sin(state.clock.elapsedTime * 0.4) * 0.03;
-    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.02;
+    const t = (state.clock.elapsedTime * def.speed + def.phase) % 1;
+    // Fly in the direction the aircraft is facing.
+    // facesRight → travels left → right (x: -14 → +14)
+    // facesLeft  → travels right → left (x: +14 → -14)
+    const x = def.facesRight
+      ? THREE.MathUtils.lerp(-14, 14, t)
+      : THREE.MathUtils.lerp(14, -14, t);
+    const y = def.yOffset + Math.sin(t * Math.PI) * 0.5;
+    ref.current.position.set(x, y, def.zOffset);
+    // No Y flip — textured planes keep their artwork orientation.
+    ref.current.rotation.z = def.tilt + Math.sin(state.clock.elapsedTime * 0.4) * 0.02;
+    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.015;
   });
+
   return (
-    <group ref={ref} scale={scale}>
-      <Aircraft variant={variant} />
-    </group>
+    <mesh ref={ref}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial
+        map={texture}
+        transparent
+        alphaTest={0.05}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
   );
 }
 
@@ -170,16 +162,15 @@ export default function AircraftScene() {
       frameloop={reduced ? "never" : "always"}
     >
       <color attach="background" args={["#0b1424"]} />
-      <fog attach="fog" args={["#0b1424", 10, 28]} />
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[5, 8, 4]} intensity={1.1} color="#dfeaff" />
-      <directionalLight position={[-6, -2, -4]} intensity={0.4} color="#57b8ff" />
+      <fog attach="fog" args={["#0b1424", 12, 30]} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[5, 8, 4]} intensity={0.8} color="#dfeaff" />
       <Suspense fallback={null}>
         <Stars />
         <Clouds />
-        <FlightPath variant="rq4" speed={0.05} yOffset={2.2} zOffset={-2} scale={0.7} phase={0} tilt={0.02} />
-        <FlightPath variant="ac130" speed={0.035} yOffset={-0.4} zOffset={0} scale={0.95} phase={0.55} tilt={-0.02} />
-        <FlightPath variant="mq9" speed={0.07} yOffset={1.0} zOffset={-5} scale={0.55} phase={0.3} tilt={0.03} />
+        {AIRCRAFT.map((def, i) => (
+          <AircraftSprite key={i} def={def} />
+        ))}
       </Suspense>
     </Canvas>
   );
