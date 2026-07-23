@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
+import { TrgLogo } from "./TrgLogo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-surface/30">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-sm bg-signal text-signal-foreground font-display font-bold">R</span>
-            <span className="font-display text-sm font-semibold tracking-wide">THE ROCKHILL GROUP</span>
-          </div>
+          <TrgLogo height={48} variant="dark" />
+          <p className="pt-1 font-serif text-sm italic text-brand-gold-soft">Delivering excellence since 2004</p>
           <p className="text-sm text-muted-foreground max-w-md">
             Providing safe, reliable, and efficient aircrew training, air transportation, and technical services for the U.S. Department of Defense and federal agencies.
           </p>

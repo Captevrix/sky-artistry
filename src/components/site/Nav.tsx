@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { TrgLogo } from "./TrgLogo";
 
 const links = [
   { to: "/aircrew-training", label: "Aircrew Training" },
@@ -26,16 +27,11 @@ export function Nav() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <span className="grid h-8 w-8 place-items-center rounded-sm bg-signal text-signal-foreground font-display font-bold">
-            R
-          </span>
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-sm font-semibold tracking-wide">ROCKHILL</span>
-            <span className="text-[10px] tracking-[0.24em] text-muted-foreground">GROUP · TRG</span>
-          </span>
+        <Link to="/" className="flex items-center group" aria-label="The Rockhill Group — Home">
+          <TrgLogo height={34} variant="dark" />
         </Link>
         <nav className="hidden lg:flex items-center gap-7">
+
           {links.map((l) => (
             <Link
               key={l.to}
