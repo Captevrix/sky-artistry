@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# Rockhill Ascent
+
+I'd like you to rebuild a professional and modern website from the legacy site:  https://therockhillgroup.com/ - In the hero, It would be cool to have an animated airplane scene with the aircraft types in the current hero.  Make it ultra modern and professional utilizing 3d where applicable.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://sky-artistry.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f9aca3e9-b54c-491e-ab15-f7061e05652d).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
